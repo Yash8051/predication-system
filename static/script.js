@@ -633,6 +633,10 @@ function setupInsightHandlers() {
 
 // Chart.js Setup
 function initAccuracyChart() {
+    if (typeof Chart === 'undefined') {
+        console.warn("Chart.js is not loaded. Accuracy chart will not be rendered.");
+        return;
+    }
     const ctx = document.getElementById('accuracy-chart').getContext('2d');
     const isDark = document.body.classList.contains('dark-mode');
     const gridColor = isDark ? '#1e293b' : '#e9ecef';
@@ -695,7 +699,7 @@ function initAccuracyChart() {
 }
 
 function updateAccuracyChartData() {
-    if (!state.charts.accuracy) return;
+    if (typeof Chart === 'undefined' || !state.charts.accuracy) return;
     
     state.charts.accuracy.data.datasets[0].data = [
         state.accuracies.decision_tree.train,
@@ -711,6 +715,10 @@ function updateAccuracyChartData() {
 }
 
 function initFrequencyChart() {
+    if (typeof Chart === 'undefined') {
+        console.warn("Chart.js is not loaded. Frequency chart will not be rendered.");
+        return;
+    }
     // Generate horizontal bar chart of symptom occurrence counts
     const ctx = document.getElementById('symptoms-frequency-chart').getContext('2d');
     const isDark = document.body.classList.contains('dark-mode');
@@ -778,6 +786,7 @@ function initFrequencyChart() {
 }
 
 function updateChartThemes() {
+    if (typeof Chart === 'undefined') return;
     const isDark = document.body.classList.contains('dark-mode');
     const gridColor = isDark ? '#1e293b' : '#e9ecef';
     const textColor = isDark ? '#94a3b8' : '#6c757d';
