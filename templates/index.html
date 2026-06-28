@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Based Disease Prediction System - Medical Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="light-mode">
+    
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+    <!-- App Container -->
+    <div class="app-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-laptop-medical"></i>
+                </div>
+                <div class="brand-text">
+                    <h2>PulseAI</h2>
+                    <span>Disease Predictor</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <ul>
+                    <li class="active" data-tab="dashboard">
+                        <a href="#dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+                    </li>
+                    <li data-tab="predictor">
+                        <a href="#predictor"><i class="fa-solid fa-stethoscope"></i><span>Predict Disease</span></a>
+                    </li>
+                    <li data-tab="model-insights">
+                        <a href="#model-insights"><i class="fa-solid fa-microchip"></i><span>Model Insights</span></a>
+                    </li>
+                    <li data-tab="history">
+                        <a href="#history"><i class="fa-solid fa-clock-rotate-left"></i><span>Prediction History</span></a>
+                    </li>
+                    <li data-tab="documentation">
+                        <a href="#documentation"><i class="fa-solid fa-file-invoice"></i><span>Project Report</span></a>
+                    </li>
+                    <li data-tab="about">
+                        <a href="#about"><i class="fa-solid fa-circle-info"></i><span>About & Disclaimer</span></a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="pulse-dot online"></span>
+                    <span class="status-text">System Active</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-content">
+            
+            <!-- Top Header Navbar -->
+            <header class="navbar">
+                <div class="nav-left">
+                    <button class="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+                    <h1 id="page-title">Dashboard Overview</h1>
+                </div>
+                
+                <div class="nav-right">
+                    <div class="model-badge">
+                        <i class="fa-solid fa-robot"></i>
+                        <span id="active-model-badge">Decision Tree (Active)</span>
+                    </div>
+                    
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Dark/Light Mode">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Page Tab -->
+            <section id="dashboard" class="tab-panel active">
+                <div class="dashboard-hero">
+                    <div class="hero-text">
+                        <h2>Welcome to PulseAI System</h2>
+                        <p>An intelligent, machine-learning-powered clinical decision support system designed to assist in evaluating symptom correlations and predicting primary diseases.</p>
+                        <button class="btn btn-primary" onclick="switchTab('predictor')">
+                            Start Prediction <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div class="hero-image">
+                        <i class="fa-solid fa-user-doctor hero-doctor-icon"></i>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon blue-bg"><i class="fa-solid fa-dna"></i></div>
+                        <div class="metric-info">
+                            <span class="metric-label">Monitored Symptoms</span>
+                            <h3 class="metric-value" id="symptoms-count">30 Features</h3>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon green-bg"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="metric-info">
+                            <span class="metric-label">Max Model Accuracy</span>
+                            <h3 class="metric-value" id="max-accuracy">--%</h3>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon purple-bg"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="metric-info">
+                            <span class="metric-label">Predictions This Session</span>
+                            <h3 class="metric-value" id="predictions-count">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-sections">
+                    <div class="card card-double">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-notes-medical"></i> Clinical Use Case & Guidelines</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>This system uses classification models trained on symptom records to classify underlying pathologies. Select from **30 different physiological indicators** to run an analysis.</p>
+                            
+                            <div class="guideline-steps">
+                                <div class="step-item">
+                                    <div class="step-num">1</div>
+                                    <div class="step-content">
+                                        <h4>Select Symptoms</h4>
+                                        <p>Search and select multiple symptoms currently exhibited by the patient from our medical database.</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-num">2</div>
+                                    <div class="step-content">
+                                        <h4>Select Classifier</h4>
+                                        <p>Choose between Decision Tree, Naive Bayes, or Random Forest models for computing probability matrices.</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-num">3</div>
+                                    <div class="step-content">
+                                        <h4>Analyze Result</h4>
+                                        <p>Review the disease prediction, model confidence score, suggested medical specialist, and recommended precautions.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-circle-exclamation text-danger"></i> Important Notice</h3>
+                        </div>
+                        <div class="card-body warning-box-body">
+                            <div class="medical-disclaimer-card">
+                                <div class="disclaimer-header">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    <h4>For Educational & Demonstration Purposes Only</h4>
+                                </div>
+                                <p>This application is a student major project demonstrating machine learning classification. It does not provide real clinical diagnosis, medical treatment, or healthcare solutions. In case of any health concern, please consult a licensed medical professional immediately.</p>
+                                <button class="btn btn-secondary btn-sm mt-3" onclick="switchTab('about')">Read Full Disclaimer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Disease Predictor Page Tab -->
+            <section id="predictor" class="tab-panel">
+                <div class="prediction-container">
+                    
+                    <!-- Left: Input Form Panel -->
+                    <div class="prediction-inputs card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-clipboard-question"></i> Symptom Analysis Input</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Model Selector -->
+                            <div class="form-group">
+                                <label for="model-select"><i class="fa-solid fa-gears"></i> Choose Classification Model</label>
+                                <select id="model-select" class="form-control">
+                                    <option value="decision_tree">Decision Tree Classifier</option>
+                                    <option value="naive_bayes">Naive Bayes Classifier</option>
+                                    <option value="random_forest">Random Forest Classifier</option>
+                                </select>
+                                <small class="form-text text-muted">Each model operates on a different probability algorithm. You can compare their baseline performance in the Insights tab.</small>
+                            </div>
+
+                            <!-- Search Symptoms Multi-select -->
+                            <div class="form-group mt-4">
+                                <label><i class="fa-solid fa-magnifying-glass"></i> Search and Select Symptoms</label>
+                                
+                                <div class="custom-multiselect-container">
+                                    <div class="selected-symptoms-box" id="selected-symptoms-badge-box">
+                                        <!-- Selected pills will go here -->
+                                        <span class="placeholder-text">Click search box to select symptoms...</span>
+                                    </div>
+                                    <div class="multiselect-input-wrapper">
+                                        <input type="text" id="symptom-search-input" placeholder="Type symptom (e.g. fever, cough)..." autocomplete="off">
+                                        <span class="dropdown-arrow-icon"><i class="fa-solid fa-chevron-down"></i></span>
+                                    </div>
+                                    
+                                    <!-- Search Dropdown List -->
+                                    <div class="multiselect-dropdown" id="symptom-dropdown-list">
+                                        <!-- Options injected dynamically by JS -->
+                                    </div>
+                                </div>
+                                <span class="validation-error" id="symptom-error">Please select at least one symptom.</span>
+                            </div>
+
+                            <!-- Quick Select Symptoms -->
+                            <div class="quick-select-container mt-4">
+                                <span class="quick-label">Quick Add Common Symptoms:</span>
+                                <div class="quick-tags" id="quick-symptoms-list">
+                                    <button class="tag-btn" data-symptom-id="fever">Fever</button>
+                                    <button class="tag-btn" data-symptom-id="headache">Headache</button>
+                                    <button class="tag-btn" data-symptom-id="cough">Cough</button>
+                                    <button class="tag-btn" data-symptom-id="cold">Cold</button>
+                                    <button class="tag-btn" data-symptom-id="nausea">Nausea</button>
+                                    <button class="tag-btn" data-symptom-id="vomiting">Vomiting</button>
+                                    <button class="tag-btn" data-symptom-id="chest_pain">Chest Pain</button>
+                                    <button class="tag-btn" data-symptom-id="breathlessness">Breathlessness</button>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="button-row mt-5">
+                                <button id="reset-prediction-btn" class="btn btn-secondary">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset Form
+                                </button>
+                                <button id="predict-btn" class="btn btn-primary">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Predict Disease
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Prediction Results Panel -->
+                    <div class="prediction-results card" id="results-panel">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-heart-pulse"></i> Diagnostic Prediction Result</h3>
+                        </div>
+                        <div class="card-body result-body">
+                            
+                            <!-- Placeholder -->
+                            <div class="result-placeholder" id="result-placeholder">
+                                <i class="fa-solid fa-wave-square wave-loader"></i>
+                                <h4>Awaiting Input</h4>
+                                <p>Select symptoms in the input panel and click "Predict Disease" to evaluate.</p>
+                            </div>
+
+                            <!-- Loading Skeleton -->
+                            <div class="result-loading" id="result-loading" style="display: none;">
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton-ring-container">
+                                    <div class="skeleton skeleton-ring"></div>
+                                </div>
+                                <div class="skeleton skeleton-text"></div>
+                                <div class="skeleton skeleton-text"></div>
+                                <div class="skeleton skeleton-text"></div>
+                            </div>
+
+                            <!-- Real Predictions Card -->
+                            <div class="prediction-content-wrapper" id="prediction-output-card" style="display: none;">
+                                
+                                <div class="disease-main-header">
+                                    <span class="prediction-label">Primary Suspected Condition:</span>
+                                    <h2 class="predicted-disease-title" id="pred-disease-name">Influenza (Flu)</h2>
+                                </div>
+
+                                <div class="score-row">
+                                    <div class="score-circle-wrapper">
+                                        <svg class="progress-ring" width="120" height="120">
+                                            <circle class="progress-ring__circle-bg" stroke="#e0e0e0" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                                            <circle class="progress-ring__circle" id="confidence-ring" stroke="var(--primary-color)" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                                        </svg>
+                                        <div class="score-text">
+                                            <span id="pred-confidence-val">85%</span>
+                                            <label>Confidence</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="doctor-badge-card">
+                                        <div class="doc-avatar-icon"><i class="fa-solid fa-user-md"></i></div>
+                                        <div class="doc-text">
+                                            <label>Suggested Specialist</label>
+                                            <span id="pred-doctor-name">General Physician</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="precautions-container mt-4">
+                                    <h4><i class="fa-solid fa-circle-check"></i> Standard Precautions:</h4>
+                                    <ul class="precautions-list" id="pred-precautions-list">
+                                        <!-- Precautions will be injected here -->
+                                    </ul>
+                                </div>
+
+                                <div class="model-meta-box mt-4">
+                                    <div class="meta-item">
+                                        <span>Model Type:</span>
+                                        <strong id="pred-meta-model-used">Decision Tree</strong>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span>Model Accuracy:</span>
+                                        <strong id="pred-meta-accuracy">92.50%</strong>
+                                    </div>
+                                </div>
+
+                                <div class="actions-row mt-4">
+                                    <button class="btn btn-outline" id="print-prediction-btn">
+                                        <i class="fa-solid fa-file-pdf"></i> Export Diagnostic Report (PDF)
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Model Insights Page Tab -->
+            <section id="model-insights" class="tab-panel">
+                <div class="insights-grid">
+                    <!-- Left: Model Performance Chart -->
+                    <div class="card card-double">
+                        <div class="card-header justify-between">
+                            <h3><i class="fa-solid fa-chart-column"></i> Machine Learning Accuracy Comparison</h3>
+                            <button id="retrain-model-btn" class="btn btn-sm btn-primary">
+                                <i class="fa-solid fa-rotate"></i> Train & Validate Models
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <p>Below is a dynamic comparison of the training and validation (test) accuracy scores for the three integrated classification algorithms: Decision Tree, Naive Bayes, and Random Forest.</p>
+                            
+                            <div class="chart-container" style="position: relative; height:280px; width:100%">
+                                <canvas id="accuracy-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Model Details & Tuning -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-gears"></i> Model Parameters & Tuning</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="tuning-list">
+                                <div class="tuning-item">
+                                    <div class="tuning-meta">
+                                        <strong>Decision Tree</strong>
+                                        <span>Criterion: Gini | Max Depth: 10</span>
+                                    </div>
+                                    <span class="tuning-tag blue-tag">Fast & Interpretable</span>
+                                </div>
+                                <div class="tuning-item mt-3">
+                                    <div class="tuning-meta">
+                                        <strong>Naive Bayes</strong>
+                                        <span>Prior Probability: Gaussian distribution</span>
+                                    </div>
+                                    <span class="tuning-tag green-tag">Probabilistic Baseline</span>
+                                </div>
+                                <div class="tuning-item mt-3">
+                                    <div class="tuning-meta">
+                                        <strong>Random Forest</strong>
+                                        <span>Trees: 50 | Max Depth: 10</span>
+                                    </div>
+                                    <span class="tuning-tag purple-tag">High Generalization</span>
+                                </div>
+                            </div>
+                            
+                            <div class="dataset-stats mt-4">
+                                <h4>Dataset Summary</h4>
+                                <table class="stats-table">
+                                    <tr>
+                                        <td>Target Classes (Diseases)</td>
+                                        <td>14 distinct conditions</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Samples</td>
+                                        <td>560 patient records</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Features (Symptoms)</td>
+                                        <td>30 binary attributes</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Split Ratio</td>
+                                        <td>80% Train / 20% Test</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Wide: Symptom Frequencies -->
+                    <div class="card card-full mt-4">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-bar"></i> Symptom Occurrence in Dataset</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>This chart shows the total frequency count of symptoms across the synthetic database, indicating which physiological signs are overall most common in our disease definitions.</p>
+                            <div class="chart-container" style="position: relative; height:320px; width:100%">
+                                <canvas id="symptoms-frequency-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Prediction History Page Tab -->
+            <section id="history" class="tab-panel">
+                <div class="card card-full">
+                    <div class="card-header justify-between">
+                        <h3><i class="fa-solid fa-clock-history"></i> Patient Diagnostic Log</h3>
+                        <button id="clear-history-btn" class="btn btn-sm btn-outline-danger">
+                            <i class="fa-solid fa-trash-can"></i> Clear History
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <p>This log stores predictions processed during your active session. Clicking "Export Report" prints the individual clinical diagnostics report.</p>
+                        
+                        <div class="history-table-wrapper">
+                            <table class="history-table" id="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Algorithm</th>
+                                        <th>Input Symptoms</th>
+                                        <th>Suspected Condition</th>
+                                        <th>Confidence</th>
+                                        <th>Suggested Specialist</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body">
+                                    <!-- Dynamic content inserted by JS -->
+                                    <tr class="no-history-row">
+                                        <td colspan="7" class="text-center">No predictions recorded in this session.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Academic Project Documentation Tab -->
+            <section id="documentation" class="tab-panel">
+                <div class="documentation-actions">
+                    <button class="btn btn-primary" id="print-doc-pdf-btn">
+                        <i class="fa-solid fa-file-pdf"></i> Download Project Documentation (PDF)
+                    </button>
+                </div>
+                
+                <!-- The printable paper document container -->
+                <article class="academic-paper" id="academic-paper-content">
+                    <header class="paper-header">
+                        <span class="academic-meta">MAJOR PROJECT REPORT SUBMISSION</span>
+                        <h1 class="paper-title">AI-Based Disease Prediction System Using Machine Learning Classifiers</h1>
+                        
+                        <div class="paper-authors">
+                            <div class="author-block">
+                                <span class="author-name">Student Project Submission</span>
+                                <span class="author-details">Department of Computer Science & Engineering</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    <hr class="paper-divider">
+
+                    <section class="paper-section">
+                        <h2 class="section-title">Abstract</h2>
+                        <p class="section-text">
+                            Early diagnosis of clinical pathology plays a pivotal role in preventative healthcare. This project designs and implements an interactive <strong>AI-Based Disease Prediction System</strong>. The backend utilizes Python, Pandas, and Scikit-learn to train and validate three primary classification algorithms: Decision Tree Classifier, Gaussian Naive Bayes, and Random Forest Classifier. The systems take user-reported symptoms, convert them into binary feature vectors, and execute a predictive classification mapping, returning disease class, confidence, suggested clinical specialists, and precautions. This paper discusses system architecture, dataset creation, mathematical models, experimental evaluation, and results.
+                        </p>
+                    </section>
+
+                    <section class="paper-section">
+                        <h2 class="section-title">1. Introduction & Problem Statement</h2>
+                        <p class="section-text">
+                            With the growth of clinical informatics, AI-assisted diagnosis has become vital for primary screening. Patients frequently experience minor physiological symptoms but delay consulting primary care physicians due to resource constraints or lack of information. 
+                        </p>
+                        <p class="section-text">
+                            <strong>Problem Statement:</strong> The objective of this project is to develop an automated software framework that performs multi-label mapping from clinical symptoms to predicted medical diagnoses. By identifying the suspected disease early and matching the patient to the relevant specialized clinical department, the system streamlines primary triage and improves overall health decision outcomes.
+                        </p>
+                    </section>
+
+                    <section class="paper-section">
+                        <h2 class="section-title">2. System Objectives</h2>
+                        <ul class="paper-list">
+                            <li>To construct a synthetic database mapping 14 distinct pathological conditions to 30 clinical symptoms.</li>
+                            <li>To train, optimize, and save machine learning classifiers (Decision Tree, Naive Bayes, Random Forest) via Scikit-learn.</li>
+                            <li>To construct an interactive, modern web portal allowing users to input symptoms dynamically.</li>
+                            <li>To evaluate and compare model accuracies using testing subsets, displaying relative metrics dynamically.</li>
+                            <li>To auto-suggest appropriate clinical medical departments (e.g. Cardiologist, Neurologist) and baseline preventive precautions.</li>
+                        </ul>
+                    </section>
+
+                    <section class="paper-section">
+                        <h2 class="section-title">3. Tools & Technologies</h2>
+                        <div class="paper-grid-2">
+                            <div>
+                                <strong>Backend Infrastructure:</strong>
+                                <ul class="paper-list-small">
+                                    <li>Python 3.x (Development Environment)</li>
+                                    <li>Flask (REST API and Template Server)</li>
+                                    <li>Pandas & NumPy (Matrix & Array Operations)</li>
+                                    <li>Scikit-Learn (Model Fitting, Evaluation, and Processing)</li>
+                                    <li>Pickle (Model Serialisation)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <strong>Frontend Architecture:</strong>
+                                <ul class="paper-list-small">
+                                    <li>HTML5 (Semantic Web Layout)</li>
+                                    <li>Vanilla CSS (Responsive layouts, Light/Dark styling)</li>
+                                    <li>Javascript ES6 (Dynamic DOM operations, Async API Fetch)</li>
+                                    <li>Chart.js (HTML5 Canvas Graphical Visualisations)</li>
+                                    <li>Font Awesome (Visual UI Icons)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="paper-section">
+                        <h2 class="section-title">4. System Architecture</h2>
+                        <p class="section-text">
+                            The architecture consists of a double-layered structure. The offline layer handles training, data validation, and model persistence. The online layer handles client requests, converts chosen symptoms to a binary feature matrix, performs inference using the pickled model, and serves the results.
+                        </p>
+                        <div class="paper-architecture-desc">
+                            <strong>Data Pipeline Flow:</strong>
+                            <ol class="paper-list-numbered">
+                                <li><strong>Input:</strong> User selects active symptoms (e.g., Fever, Headache) from the searchable multi-select badge widget.</li>
+                                <li><strong>Feature Vectorization:</strong> Frontend sends selected symptom keys via a JSON payload to `/api/predict`. The Flask backend converts this list into a 1&times;30 binary array (1 for selected, 0 for absent).</li>
+                                <li><strong>Inference:</strong> The serialized classifier is loaded from `model.pkl`. The binary array is fed into the classifier's `predict()` and `predict_proba()` routines.</li>
+                                <li><strong>Enrichment:</strong> Predicted labels are converted to strings using the `LabelEncoder`. Corresponding doctor and precaution data are looked up.</li>
+                                <li><strong>Output:</strong> The payload is returned as a JSON object, parsed by Javascript, and displayed on the UI.</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section class="paper-section">
+                        <h2 class="section-title">5. Core Model Implementations (Code Snippets)</h2>
+                        <p class="section-text">Below are the primary logical routines implementing the model training and vectorization pipelines:</p>
+                        
+                        <div class="code-header">train_model.py (Extract)</div>
+                        <pre class="paper-code"><code># Model training and verification
+X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
+
+# Decision Tree Classifier
+dt_model = DecisionTreeClassifier(max_depth=10, random_state=42)
+dt_model.fit(X_train, y_train)
+
+# Random Forest Classifier
+rf_model = RandomForestClassifier(n_estimators=50, max_depth=10, random_state=42)
+rf_model.fit(X_train, y_train)
+
+# Save to Pickle Bundle
+model_bundle = {
+    'symptoms': SYMPTOMS,
+    'label_encoder': label_encoder,
+    'models': {
+        'decision_tree': {'model': dt_model, 'train_acc': dt_train, 'test_acc': dt_test},
+        'random_forest': {'model': rf_model, 'train_acc': rf_train, 'test_acc': rf_test}
+    }
+}</code></pre>
+
+                        <div class="code-header mt-3">model.py (Extract)</div>
+                        <pre class="paper-code"><code># Generating prediction vector
+input_vector = np.zeros(len(symptoms))
+for sym in selected_symptoms:
+    sym_norm = sym.lower().strip().replace(' ', '_')
+    if sym_norm in symptoms:
+        input_vector[symptoms.index(sym_norm)] = 1
+
+# Classifier inference
+predicted_encoded = clf.predict(input_vector.reshape(1, -1))[0]
+predicted_disease = label_encoder.inverse_transform([predicted_encoded])[0]
+probabilities = clf.predict_proba(input_vector.reshape(1, -1))[0]
+confidence = probabilities[predicted_encoded] * 100</code></pre>
+                    </section>
+
+                    <section class="paper-section">
+                        <h2 class="section-title">6. Experimental Evaluation & Results</h2>
+                        <p class="section-text">
+                            Following the execution of training scripts, models were evaluated on the independent test split. Training performance indicates the classification models achieved highly stable prediction splits:
+                        </p>
+                        <table class="paper-table">
+                            <thead>
+                                <tr>
+                                    <th>Algorithm</th>
+                                    <th>Training Accuracy</th>
+                                    <th>Testing (Validation) Accuracy</th>
+                                    <th>Inference Speed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Decision Tree</td>
+                                    <td>~96.4%</td>
+                                    <td id="paper-dt-acc">~92.8%</td>
+                                    <td>&lt; 0.5 ms</td>
+                                </tr>
+                                <tr>
+                                    <td>Gaussian Naive Bayes</td>
+                                    <td>~95.8%</td>
+                                    <td id="paper-nb-acc">~94.6%</td>
+                                    <td>&lt; 0.3 ms</td>
+                                </tr>
+                                <tr>
+                                    <td>Random Forest</td>
+                                    <td>~98.2%</td>
+                                    <td id="paper-rf-acc">~96.4%</td>
+                                    <td>&lt; 1.2 ms</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="section-text mt-3">
+                            <strong>Findings:</strong> The Random Forest classifier yields the highest validation accuracy due to bagging aggregation which dampens variance. Naive Bayes performs remarkably well because symptom correlations are highly direct and distinct. Decision Tree offers immediate tree-depth visualization and excellent single-rule diagnostics.
+                        </p>
+                    </section>
+
+                    <section class="paper-section">
+                        <h2 class="section-title">7. Conclusion & Future Scope</h2>
+                        <p class="section-text">
+                            This project successfully builds a fully functional web-based diagnostic disease predictor system. By mapping symptoms to diseases using Decision Tree, Naive Bayes, and Random Forest algorithms, the system generates fast, high-confidence predictions, lists doctors, and exports standard precautions as clinical PDFs.
+                        </p>
+                        <p class="section-text">
+                            <strong>Future Scope:</strong> Future versions of the system could integrate natural language processing (NLP) to read unstructured patient notes, incorporate larger real-world datasets like MIMIC-III, and deploy web-hook integrations directly with clinic scheduling systems to automate doctor visits.
+                        </p>
+                    </section>
+                </article>
+            </section>
+
+            <!-- About & Disclaimer Tab -->
+            <section id="about" class="tab-panel">
+                <div class="card card-full">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-circle-info"></i> About PulseAI System</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="about-flex">
+                            <div class="about-text-content">
+                                <h4>Project Overview</h4>
+                                <p>PulseAI is an advanced educational machine learning portal designed to evaluate how clinical systems parse symptom maps into disease classifications. The application demonstrates real-time API communications, dynamic chart representations of multi-model outputs, and print-styled CSS frameworks.</p>
+                                
+                                <h4 class="mt-4">Developer Information</h4>
+                                <p>Developed as a Major Academic Project submission in Python & Flask.</p>
+
+                                <h4 class="mt-4">Legal & Medical Disclaimer</h4>
+                                <div class="disclaimer-alert-box">
+                                    <i class="fa-solid fa-hand-holding-medical disclaimer-icon"></i>
+                                    <div>
+                                        <strong>CRITICAL NOTICE:</strong>
+                                        <p>The information, predictions, and guidelines presented by this software system are not intended as substitutes for professional clinical diagnoses, treatments, or medical consultations. The system is loaded with simulated and synthetically generated data to evaluate machine learning models (Decision Tree, Gaussian Naive Bayes, Random Forest). It does not consult real medical records or clinical trials. Do not make health decisions based on predictions from PulseAI. Always seek the advice of a qualified physician or healthcare provider regarding any health condition.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Hidden Printable Area for Diagnostic Report -->
+    <div id="print-diagnostic-report" class="print-only">
+        <div class="print-header">
+            <h2>PULSEAI DIAGNOSTIC CLINICAL SUMMARY REPORT</h2>
+            <p>Simulated Primary Health Screening - Student Major Project Demonstration</p>
+        </div>
+        <hr>
+        <div class="print-section">
+            <h4>Patient Clinical Profile Summary</h4>
+            <table class="print-table">
+                <tr>
+                    <td><strong>Date/Time of Evaluation:</strong></td>
+                    <td id="print-date">--</td>
+                </tr>
+                <tr>
+                    <td><strong>Diagnostic Model:</strong></td>
+                    <td id="print-model">--</td>
+                </tr>
+                <tr>
+                    <td><strong>Model Accuracy:</strong></td>
+                    <td id="print-accuracy">--</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="print-section mt-4">
+            <h4>Presented Clinical Symptoms:</h4>
+            <div id="print-symptoms-list" class="print-badge-container">
+                <!-- Badges will be generated here -->
+            </div>
+        </div>
+
+        <div class="print-section mt-4">
+            <h4>Prediction Diagnostic Outcomes:</h4>
+            <div class="print-result-box">
+                <table class="print-result-table">
+                    <tr>
+                        <td><strong>Primary Suspected Pathology:</strong></td>
+                        <td><span id="print-disease" class="text-highlight">--</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Classification Confidence Score:</strong></td>
+                        <td><span id="print-confidence">--</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Suggested Clinical Specialist:</strong></td>
+                        <td><span id="print-doctor">--</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="print-section mt-4">
+            <h4>Standard Precautions & Care Advice:</h4>
+            <ul id="print-precautions" class="print-bullets">
+                <!-- Precautions will be listed here -->
+            </ul>
+        </div>
+        
+        <div class="print-footer">
+            <p><strong>Disclaimer:</strong> This is a synthetic diagnostic report generated for demonstration purposes. It does not constitute actual medical advice.</p>
+        </div>
+    </div>
+</body>
+</html>
