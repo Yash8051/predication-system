@@ -153,3 +153,82 @@ def predict_disease(selected_symptoms, model_type='decision_tree'):
         'model_used': model_type.replace('_', ' ').title(),
         'model_accuracy': model_info['test_acc']
     }
+
+def get_chat_response(message):
+    """
+    NLP/Rule-based clinical assistant router to answer questions 
+    about symptoms, diseases, precautions, and specialist mappings.
+    """
+    message = message.lower().strip()
+    
+    # 1. Check if the user is asking about precautions for a disease
+    for disease, info in DISEASE_INFO.items():
+        disease_lower = disease.lower().replace(' (flu)', '')
+        # Build keywords list including sub-words (e.g., 'covid' from 'covid-19')
+        keywords = [disease_lower] + [w for w in disease_lower.replace('-', ' ').split(' ') if len(w) > 3]
+        if any(kw in message for kw in keywords):
+            prec_bullets = "".join([f"<li>{p}</li>" for p in info['precautions']])
+            return (
+                f"For <strong>{disease}</strong>, the suggested clinical department is <strong>{info['doctor']}</strong>.<br><br>"
+                f"<strong>Standard preventive precautions:</strong>"
+                f"<ul style='margin-left: 20px; margin-top: 8px;'>{prec_bullets}</ul>"
+                f"<br><em>Note: This is simulated clinical data. Always consult a physician for real treatment.</em>"
+            )
+            
+    # 2. Check if the user is asking about a symptom
+    symptoms = get_symptoms_list()
+    found_symptoms = []
+    for sym in symptoms:
+        sym_name = sym.replace('_', ' ')
+        if sym_name in message:
+            found_symptoms.append(sym)
+            
+    if found_symptoms:
+        from train_model import DISEASE_PROFILES
+        matching_diseases = []
+        for disease, profile in DISEASE_PROFILES.items():
+            matches = [s for s in found_symptoms if s in profile['primary'] or s in profile['secondary']]
+            if matches:
+                matching_diseases.append(disease)
+                
+        if matching_diseases:
+            symptoms_str = ", ".join([f"<strong>{s.replace('_', ' ').title()}</strong>" for s in found_symptoms])
+            diseases_str = "".join([f"<li>{d}</li>" for d in matching_diseases])
+            return (
+                f"Based on our medical profiles database, the symptoms {symptoms_str} "
+                f"are associated with the following conditions:"
+                f"<ul style='margin-left: 20px; margin-top: 8px;'>{diseases_str}</ul>"
+                f"<br>To perform a complete machine learning probability mapping, go to the <strong>Predictor</strong> page, select these symptoms, and run the classifier."
+            )
+
+    # 3. Check if asking about specialists
+    specialists = set(info['doctor'].lower() for info in DISEASE_INFO.values())
+    found_spec = None
+    for spec in specialists:
+        if spec in message:
+            found_spec = spec
+            break
+            
+    if found_spec:
+        matching_diseases = [disease for disease, info in DISEASE_INFO.items() if info['doctor'].lower() == found_spec]
+        diseases_str = ", ".join([f"<strong>{d}</strong>" for d in matching_diseases])
+        return f"A <strong>{found_spec.title()}</strong> specializes in diagnosing and treating conditions like: {diseases_str}."
+
+    # 4. Greeting fallback
+    if any(g in message for g in ['hi', 'hello', 'hey', 'greetings', 'help', 'assist']):
+        return (
+            "Hello! I am PulseAI, your virtual clinical assistant.<br><br>"
+            "I can help you explore symptom correlations, lookup precautions, and identify specialist mappings.<br><br>"
+            "<strong>Try asking me:</strong>"
+            "<ul style='margin-left: 20px; margin-top: 8px;'>"
+            "<li><em>\"What conditions cause chest pain?\"</em></li>"
+            "<li><em>\"What precautions should I take for Covid-19?\"</em></li>"
+            "<li><em>\"Which diseases require a Cardiologist?\"</em></li>"
+            "</ul>"
+        )
+        
+    return (
+        "I'm sorry, I couldn't resolve your question within our symptom-disease database.<br><br>"
+        "Try asking about symptoms (e.g. <em>'what causes fever?'</em>), specific conditions (e.g. <em>'precautions for Covid-19'</em>), "
+        "or medical specialties (e.g. <em>'what does a neurologist treat?'</em>)."
+    )

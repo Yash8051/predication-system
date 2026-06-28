@@ -109,6 +109,27 @@ def train():
             'error': f'Failed to retrain models: {str(e)}'
         }), 500
 
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    """Returns AI clinical assistant replies for user text messages."""
+    try:
+        data = request.get_json()
+        if not data or 'message' not in data:
+            return jsonify({'success': False, 'error': 'No message provided.'}), 400
+            
+        user_message = data.get('message', '')
+        response_text = model.get_chat_response(user_message)
+        
+        return jsonify({
+            'success': True,
+            'reply': response_text
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('index.html'), 200  # Fallback for client routing

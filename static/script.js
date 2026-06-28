@@ -61,7 +61,13 @@ const elements = {
     retrainModelBtn: document.getElementById('retrain-model-btn'),
     
     // Documentation Print
-    printDocPdfBtn: document.getElementById('print-doc-pdf-btn')
+    printDocPdfBtn: document.getElementById('print-doc-pdf-btn'),
+    
+    // Chatbot Elements
+    chatUserInput: document.getElementById('chat-user-input'),
+    chatSendBtn: document.getElementById('chat-send-btn'),
+    chatMessagesContainer: document.getElementById('chat-messages-container'),
+    chatStarterChips: document.querySelector('.chat-starter-chips')
 };
 
 // Initialize App
@@ -74,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPredictionHandlers();
     setupInsightHandlers();
     setupDocumentationHandlers();
+    setupChatbotHandlers();
     fetchSymptomsAndStats();
 });
 
@@ -820,6 +827,110 @@ function setupDocumentationHandlers() {
         // Trigger browser print dialog for academic document
         window.print();
     });
+}
+
+// AI Chatbot UI Handlers
+function setupChatbotHandlers() {
+    if (!elements.chatSendBtn) return;
+    
+    const sendMessage = async () => {
+        const query = elements.chatUserInput.value.trim();
+        if (!query) return;
+        
+        // Append user message
+        appendChatMessage(query, 'user');
+        elements.chatUserInput.value = '';
+        
+        // Append bot loading shimmer bubble
+        const loadingId = appendChatLoadingMessage();
+        
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: query })
+            });
+            const data = await response.json();
+            
+            // Remove loading indicator and append real bot answer
+            removeChatLoadingMessage(loadingId);
+            
+            if (data.success) {
+                appendChatMessage(data.reply, 'bot');
+            } else {
+                appendChatMessage("I encountered an issue processing your query: " + data.error, 'bot');
+            }
+        } catch (e) {
+            removeChatLoadingMessage(loadingId);
+            appendChatMessage("Connection lost. Please check your local server or internet connection.", 'bot');
+        }
+    };
+
+    elements.chatSendBtn.addEventListener('click', sendMessage);
+    
+    elements.chatUserInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    // Handle starter questions chips click
+    if (elements.chatStarterChips) {
+        const chips = elements.chatStarterChips.querySelectorAll('.chip-btn');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const queryText = chip.getAttribute('data-query');
+                elements.chatUserInput.value = queryText;
+                sendMessage();
+            });
+        });
+    }
+}
+
+function appendChatMessage(text, sender) {
+    const container = elements.chatMessagesContainer;
+    if (!container) return;
+    
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `chat-msg ${sender}`;
+    
+    const avatarIcon = sender === 'bot' ? 'fa-robot' : 'fa-user';
+    msgDiv.innerHTML = `
+        <div class="chat-msg-avatar"><i class="fa-solid ${avatarIcon}"></i></div>
+        <div class="chat-msg-bubble">${text}</div>
+    `;
+    
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+function appendChatLoadingMessage() {
+    const container = elements.chatMessagesContainer;
+    if (!container) return "";
+    
+    const uniqueId = 'loader-' + Date.now();
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = `chat-msg bot`;
+    loadingDiv.id = uniqueId;
+    loadingDiv.innerHTML = `
+        <div class="chat-msg-avatar"><i class="fa-solid fa-robot"></i></div>
+        <div class="chat-msg-bubble" style="display: flex; gap: 4px; padding: 12px 18px; align-items:center;">
+            <span class="pulse-dot online" style="background-color: var(--primary-color); width: 6px; height: 6px;"></span>
+            <span class="pulse-dot online" style="background-color: var(--primary-color); width: 6px; height: 6px; animation-delay: 0.2s;"></span>
+            <span class="pulse-dot online" style="background-color: var(--primary-color); width: 6px; height: 6px; animation-delay: 0.4s;"></span>
+        </div>
+    `;
+    
+    container.appendChild(loadingDiv);
+    container.scrollTop = container.scrollHeight;
+    return uniqueId;
+}
+
+function removeChatLoadingMessage(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.remove();
+    }
 }
 
 // Toast Notifications Helper

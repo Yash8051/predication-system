@@ -52,6 +52,9 @@
                     <li data-tab="documentation">
                         <a href="#documentation"><i class="fa-solid fa-file-invoice"></i><span>Project Report</span></a>
                     </li>
+                    <li data-tab="ai-assistant">
+                        <a href="#ai-assistant"><i class="fa-solid fa-comments"></i><span>AI Chat Assistant</span></a>
+                    </li>
                     <li data-tab="about">
                         <a href="#about"><i class="fa-solid fa-circle-info"></i><span>About & Disclaimer</span></a>
                     </li>
@@ -660,6 +663,53 @@ confidence = probabilities[predicted_encoded] * 100</code></pre>
                         </p>
                     </section>
                 </article>
+            </section>
+
+            <!-- AI Health Assistant Tab -->
+            <section id="ai-assistant" class="tab-panel">
+                <div class="card card-full chat-container-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-comments"></i> PulseAI Health Assistant Chatbot</h3>
+                    </div>
+                    <div class="card-body chat-card-body">
+                        <div class="chat-wrapper">
+                            
+                            <!-- Chat Messages Display Area -->
+                            <div class="chat-messages" id="chat-messages-container">
+                                <div class="chat-msg bot">
+                                    <div class="chat-msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                                    <div class="chat-msg-bubble">
+                                        Hello! I am PulseAI, your virtual clinical assistant.<br><br>
+                                        I can help you explore symptom correlations, lookup precautions, and identify specialist mappings.<br><br>
+                                        <strong>Try asking me:</strong>
+                                        <ul style="margin-left: 20px; margin-top: 8px;">
+                                            <li><em>"What conditions cause chest pain?"</em></li>
+                                            <li><em>"What precautions should I take for Covid-19?"</em></li>
+                                            <li><em>"Which diseases require a Cardiologist?"</em></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Starter Questions list -->
+                            <div class="chat-starter-chips">
+                                <button class="chip-btn" data-query="What conditions cause headache?">What causes headache?</button>
+                                <button class="chip-btn" data-query="What precautions should I take for Typhoid?">Precautions for Typhoid</button>
+                                <button class="chip-btn" data-query="Which doctor to consult for skin rash?">Doctor for Skin Rash</button>
+                                <button class="chip-btn" data-query="Which diseases require an Endocrinologist?">Endocrinologist conditions</button>
+                            </div>
+                            
+                            <!-- Chat Input Form -->
+                            <div class="chat-input-row">
+                                <input type="text" id="chat-user-input" placeholder="Type your clinical question here..." autocomplete="off">
+                                <button id="chat-send-btn" class="btn btn-primary">
+                                    <i class="fa-solid fa-paper-plane"></i> Send
+                                </button>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- About & Disclaimer Tab -->
