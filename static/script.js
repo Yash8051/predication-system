@@ -6,7 +6,8 @@ const state = {
     accuracies: {
         decision_tree: { train: 96.4, test: 92.8 },
         naive_bayes: { train: 95.8, test: 94.6 },
-        random_forest: { train: 98.2, test: 96.4 }
+        random_forest: { train: 98.2, test: 96.4 },
+        neural_network: { train: 99.5, test: 97.5 }
     },
     predictionHistory: [],
     predictionsCount: 0,
@@ -214,9 +215,11 @@ function updateAccuracyDashboard() {
     const dtAcc = document.getElementById('paper-dt-acc');
     const nbAcc = document.getElementById('paper-nb-acc');
     const rfAcc = document.getElementById('paper-rf-acc');
+    const nnAcc = document.getElementById('paper-nn-acc');
     if (dtAcc) dtAcc.innerText = `~${state.accuracies.decision_tree.test}%`;
     if (nbAcc) nbAcc.innerText = `~${state.accuracies.naive_bayes.test}%`;
     if (rfAcc) rfAcc.innerText = `~${state.accuracies.random_forest.test}%`;
+    if (nnAcc) nnAcc.innerText = `~${state.accuracies.neural_network.test}%`;
 }
 
 // Custom Dropdown Controls
@@ -645,14 +648,15 @@ function initAccuracyChart() {
     state.charts.accuracy = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Decision Tree', 'Naive Bayes', 'Random Forest'],
+            labels: ['Decision Tree', 'Naive Bayes', 'Random Forest', 'Neural Network (ANN)'],
             datasets: [
                 {
                     label: 'Training Accuracy (%)',
                     data: [
                         state.accuracies.decision_tree.train,
                         state.accuracies.naive_bayes.train,
-                        state.accuracies.random_forest.train
+                        state.accuracies.random_forest.train,
+                        state.accuracies.neural_network.train
                     ],
                     backgroundColor: 'rgba(30, 96, 145, 0.4)',
                     borderColor: 'var(--primary-color)',
@@ -664,7 +668,8 @@ function initAccuracyChart() {
                     data: [
                         state.accuracies.decision_tree.test,
                         state.accuracies.naive_bayes.test,
-                        state.accuracies.random_forest.test
+                        state.accuracies.random_forest.test,
+                        state.accuracies.neural_network.test
                     ],
                     backgroundColor: 'rgba(82, 183, 136, 0.6)',
                     borderColor: 'var(--accent-color)',
@@ -704,12 +709,14 @@ function updateAccuracyChartData() {
     state.charts.accuracy.data.datasets[0].data = [
         state.accuracies.decision_tree.train,
         state.accuracies.naive_bayes.train,
-        state.accuracies.random_forest.train
+        state.accuracies.random_forest.train,
+        state.accuracies.neural_network.train
     ];
     state.charts.accuracy.data.datasets[1].data = [
         state.accuracies.decision_tree.test,
         state.accuracies.naive_bayes.test,
-        state.accuracies.random_forest.test
+        state.accuracies.random_forest.test,
+        state.accuracies.neural_network.test
     ];
     state.charts.accuracy.update();
 }

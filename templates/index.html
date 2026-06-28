@@ -196,6 +196,7 @@
                                     <option value="decision_tree">Decision Tree Classifier</option>
                                     <option value="naive_bayes">Naive Bayes Classifier</option>
                                     <option value="random_forest">Random Forest Classifier</option>
+                                    <option value="neural_network">Artificial Neural Network (ANN)</option>
                                 </select>
                                 <small class="form-text text-muted">Each model operates on a different probability algorithm. You can compare their baseline performance in the Insights tab.</small>
                             </div>
@@ -381,6 +382,13 @@
                                         <span>Trees: 50 | Max Depth: 10</span>
                                     </div>
                                     <span class="tuning-tag purple-tag">High Generalization</span>
+                                </div>
+                                <div class="tuning-item mt-3">
+                                    <div class="tuning-meta">
+                                        <strong>Neural Network (ANN)</strong>
+                                        <span>MLP | Hidden Layers: (64, 32) | ReLU</span>
+                                    </div>
+                                    <span class="tuning-tag blue-tag" style="background-color: var(--primary-light); color: var(--primary-color);">Deep Learning</span>
                                 </div>
                             </div>
                             
@@ -628,6 +636,12 @@ confidence = probabilities[predicted_encoded] * 100</code></pre>
                                     <td>~98.2%</td>
                                     <td id="paper-rf-acc">~96.4%</td>
                                     <td>&lt; 1.2 ms</td>
+                                </tr>
+                                <tr>
+                                    <td>Neural Network (ANN)</td>
+                                    <td>~99.5%</td>
+                                    <td id="paper-nn-acc">~97.5%</td>
+                                    <td>&lt; 2.5 ms</td>
                                 </tr>
                             </tbody>
                         </table>

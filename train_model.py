@@ -141,6 +141,13 @@ def train_and_save_models():
     rf_train_acc = rf_model.score(X_train, y_train)
     rf_test_acc = rf_model.score(X_test, y_test)
     
+    # Model 4: Artificial Neural Network (MLP)
+    from sklearn.neural_network import MLPClassifier
+    mlp_model = MLPClassifier(hidden_layer_sizes=(64, 32), activation='relu', solver='adam', max_iter=500, random_state=42)
+    mlp_model.fit(X_train, y_train)
+    mlp_train_acc = mlp_model.score(X_train, y_train)
+    mlp_test_acc = mlp_model.score(X_test, y_test)
+    
     # Calculate symptom frequencies in dataset
     symptom_counts = {sym: int(df[sym].sum()) for sym in SYMPTOMS}
     
@@ -164,6 +171,11 @@ def train_and_save_models():
                 'model': rf_model,
                 'train_acc': round(rf_train_acc * 100, 2),
                 'test_acc': round(rf_test_acc * 100, 2)
+            },
+            'neural_network': {
+                'model': mlp_model,
+                'train_acc': round(mlp_train_acc * 100, 2),
+                'test_acc': round(mlp_test_acc * 100, 2)
             }
         }
     }
@@ -175,6 +187,7 @@ def train_and_save_models():
     print(f"Decision Tree Accuracy  - Train: {dt_train_acc:.2%}, Test: {dt_test_acc:.2%}")
     print(f"Naive Bayes Accuracy    - Train: {nb_train_acc:.2%}, Test: {nb_test_acc:.2%}")
     print(f"Random Forest Accuracy  - Train: {rf_train_acc:.2%}, Test: {rf_test_acc:.2%}")
+    print(f"Neural Network Accuracy - Train: {mlp_train_acc:.2%}, Test: {mlp_test_acc:.2%}")
     
     return model_bundle
 
